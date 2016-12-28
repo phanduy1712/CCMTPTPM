@@ -1,0 +1,163 @@
+﻿@using System.Reflection 
+@{
+    ViewBag.Title = "Home Page";
+    Layout = "~/Views/Shared/_BackEnd.cshtml";
+    var role = (string[])ViewBag.UserRoles;
+
+}
+<section class="content-header">
+    <h1>
+        Trang chủ 
+    </h1> 
+</section>
+<section class="content">
+    @{
+        if (ViewBag.TypeShow == 1)
+        {
+            <div class="row">
+                <div class="col-lg-3 col-xs-6">
+                    <!-- small box -->
+                    <div class="small-box bg-aqua">
+                        <div class="inner">
+                            <h3>@ViewBag.CustomerCount</h3>
+                            <p>Số lượng khách</p>
+                        </div>
+                        <div class="icon">
+                            <i class="ion ion-bag"></i>
+                        </div>
+                        <a href="/@(ViewBag.NameType)/Report/ReportCustomer" class="small-box-footer">Chi tiết <i class="fa fa-arrow-circle-right"></i></a>
+                    </div>
+                </div><!-- ./col -->
+                <div class="col-lg-3 col-xs-6">
+                    <!-- small box -->
+                    <div class="small-box bg-green">
+                        <div class="inner">
+                            <h3>@ViewBag.CompanyCount</h3>
+                            <p>Số lượng công ty</p>
+                        </div>
+                        <div class="icon">
+                            <i class="ion ion-stats-bars"></i>
+                        </div>
+                        <a href="/@(ViewBag.NameType)/Report/ReportCompany" class="small-box-footer">Chi tiết <i class="fa fa-arrow-circle-right"></i></a>
+                    </div>
+                </div><!-- ./col -->
+                <div class="col-lg-3 col-xs-6">
+                    <!-- small box -->
+                    <div class="small-box bg-yellow">
+                        <div class="inner">
+                            <h3>@ViewBag.CardActive <sub style="font-size: 20px">/@ViewBag.Card </sub></h3>
+                            <p>Số lượng thẻ phát hành</p>
+                        </div>
+                        <div class="icon">
+                            <i class="ion ion-person-add"></i>
+                        </div>
+                        <a href="/@(ViewBag.NameType)/Report/ReportCard" class="small-box-footer">Chi tiết <i class="fa fa-arrow-circle-right"></i></a>
+                    </div>
+                </div><!-- ./col -->
+                <div class="col-lg-3 col-xs-6">
+                    <!-- small box -->
+                    <div class="small-box bg-red">
+                        <div class="inner">
+                            <h3>@(ViewBag.CardActiveMonth)</h3>
+                            <p>Số lượng thẻ kích hoạt trong tháng</p>
+                        </div>
+                        <div class="icon">
+                            <i class="ion ion-pie-graph"></i>
+                        </div>
+                        <a href="/@(ViewBag.NameType)/Report/ReportCard" class="small-box-footer">Chi tiết <i class="fa fa-arrow-circle-right"></i></a>
+                    </div>
+                </div><!-- ./col -->
+            </div>
+            <div class="row">
+                <div class="col-lg-6">
+                    <!-- solid sales graph -->
+                    <div class="box box-solid ">
+                        <div class="box-header">
+                            <i class="fa fa-th"></i>
+                            <h3 class="box-title">Khách hàng đăng ký trong năm</h3>
+                            @*<div class="box-tools pull-right">
+                                    <button class="btn bg-teal btn-sm" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                </div>*@
+                        </div>
+                        <div class="box-body border-radius-none">
+                            <input class="input-chart-customer" type="hidden" value="[@(ViewBag.CharCustomer)]" />
+                            <div class="chart" id="line-chart-customer" style="height: 250px;"></div>
+                        </div><!-- /.box-body -->
+                        <div class="box-footer no-border">
+                            <div class="row">
+                                @foreach (var o in ViewBag.CharCustomerP)
+                                {
+                                    Type t = o.GetType();
+                                    var co = ((int)t.GetProperty("ct").GetValue(o, null));
+                                    <div class="col-xs-3 text-center" style="border-right: 1px solid #f4f4f4">
+                                        <input type="text" class="knob" data-readonly="true" value="@( Math.Round(((decimal)co / (decimal)ViewBag.CusC) * 100 ))" data-width="60" data-height="60" data-fgcolor="#39CCCC" />
+                                        <div class="knob-label">Năm @((int)t.GetProperty("Key").GetValue(o, null)) </div>
+                                    </div><!-- ./col -->
+                                }
+                            </div><!-- /.row -->
+                        </div><!-- /.box-footer -->
+                    </div><!-- /.box -->
+                </div>
+                <div class="col-lg-6">
+                    <!-- solid sales graph -->
+                    <div class="box box-solid ">
+                        <div class="box-header">
+                            <i class="fa fa-th"></i>
+                            <h3 class="box-title">Công ty kích hoạt trong năm</h3>
+                            @*<div class="box-tools pull-right">
+                                    <button class="btn bg-teal btn-sm" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                </div>*@
+                        </div>
+                        <div class="box-body border-radius-none">
+                            <input class="input-chart-company" type="hidden" value="[@(ViewBag.CharCompany)]" />
+                            <div class="chart" id="line-chart-company" style="height: 250px;"></div>
+                        </div><!-- /.box-body -->
+                        <div class="box-footer no-border">
+                            <div class="row">
+                                @foreach (var o in ViewBag.CharCompanyP)
+                                {
+                                    Type t = o.GetType();
+                                    var co = ((int)t.GetProperty("ct").GetValue(o, null));
+                                    <div class="col-xs-3 text-center" style="border-right: 1px solid #f4f4f4">
+                                        <input type="text" class="knob" data-readonly="true" value="@( Math.Round(((decimal)co / (decimal)ViewBag.ComS) * 100))" data-width="60" data-height="60" data-fgcolor="#39CCCC" />
+                                        <div class="knob-label">Năm @((int)t.GetProperty("Key").GetValue(o, null)) </div>
+                                    </div><!-- ./col -->
+                                }
+                            </div><!-- /.row -->
+                        </div><!-- /.box-footer -->
+                    </div><!-- /.box -->
+
+                </div>
+            </div>
+    <script>
+    $(function () {
+        var lineCompany = new Morris.Line({
+            element: 'line-chart-company',
+            resize: true,
+            data: JSON.parse($(".input-chart-company").val()),
+            xkey: 'y',
+            ykeys: ['ct'],
+            labels: ['Công ty'],
+            lineColors: ['#3c8dbc'],
+            hideHover: 'auto'
+        });
+        var lineCustomer = new Morris.Line({
+            element: 'line-chart-customer',
+            resize: true,
+            data: JSON.parse($(".input-chart-customer").val()),
+            xkey: 'y',
+            ykeys: ['ct'],
+            labels: ['Khách hàng'],
+            lineColors: ['#3c8dbc'],
+            hideHover: 'auto'
+        });
+    });
+</script>
+        }
+        else
+        {
+
+        }
+    }
+
+</section>

@@ -1,0 +1,24 @@
+﻿@if (ViewBag.Mess == 1)//Thành công
+{
+    <div class="alert alert-success alert-dismissable">
+        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+        <h4><i class="icon fa fa-check"></i> Thông báo</h4>
+        @ViewBag.Notice
+    </div>
+}
+else if (ViewBag.Mess == 2)//Thất bai
+{
+    <div class="alert alert-danger alert-dismissable">
+        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+        <h4><i class="icon fa fa-ban"></i>Thông báo</h4>
+        @ViewBag.Notice
+    </div>
+}
+else if (ViewBag.Mess == 3)//canh bao
+{
+    <div class="alert alert-warning alert-dismissable">
+        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+        <h4><i class="icon fa fa-warning"></i> Thông báo</h4>
+        @ViewBag.Notice
+    </div>
+}

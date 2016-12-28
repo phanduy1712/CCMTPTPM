@@ -1,0 +1,110 @@
+﻿@using QLD.Models
+@using Microsoft.AspNet.Identity
+@{
+    var role = (string[])ViewBag.UserRoles;
+    var link = (string[])ViewBag.UserRolesMenu;
+    var str = "";
+    var flat = false;
+}
+<section class="sidebar">
+    <!-- Sidebar user panel -->
+    <div class="user-panel">
+        <div class="pull-left image">
+            <img src="~/source/library/image/user.png" class="img-circle" alt="User Image" />
+        </div>
+        <div class="pull-left info">
+            <p>@User.Identity.GetUserName()</p>
+            <a href="#"><i class="fa fa-circle text-success"></i>@User.Identity.GetUserId() Online @User.Identity.IsAuthenticated </a>
+        </div>
+    </div>
+    <!-- search form -->
+    <form action="#" method="get" class="sidebar-form">
+        <div class="input-group">
+            <input type="text" name="q" class="form-control" placeholder="Search..." />
+            <span class="input-group-btn">
+                <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i></button>
+            </span>
+        </div>
+    </form>
+    @if (role.Contains("QL"))
+    {
+        <ul class="sidebar-menu">
+            <li class="header">Danh mục chính</li>
+            <li class="treeview">
+                <a href="/Admin/Index">
+                    <i class="fa fa-home"></i> <span>Trang chủ</span>
+                </a>
+            </li>
+            <li class="treeview">
+                <a href="#"><i class="fa fa-newspaper-o"></i> <span>Quản lý</span><i class="fa fa-angle-left pull-right"></i></a>
+                <ul class="treeview-menu">
+                    <li><a href="/Admin/User/Index"><i class="fa fa-circle-o"></i> Thành viên</a></li>
+                    <li><a href="/Admin/RoleGroup/Index"><i class="fa fa-circle-o"></i> Nhóm quyền</a></li>
+                    <li><a href="/Admin/Year/Index"><i class="fa fa-circle-o"></i> Thông tin tài khoản</a></li>
+                    <li><a href="/Admin/Year/Index"><i class="fa fa-circle-o"></i> Thông kê</a></li>
+                    <li><a href="/Admin/Year/Index"><i class="fa fa-circle-o"></i> Cấu hình</a></li>
+                    <li><a href="/Admin/Year/Index"><i class="fa fa-circle-o"></i> Năm học</a></li>
+                    <li><a href="/Admin/Semester/Index"><i class="fa fa-circle-o"></i> Học kỳ</a></li>
+                 
+                </ul>
+            
+            <li class="treeview">
+                <a href="#"><i class="fa fa-newspaper-o"></i> <span>Danh mục</span><i class="fa fa-angle-left pull-right"></i></a>
+                <ul class="treeview-menu">
+                    <li><a href="/Admin/Paymen/Index"><i class="fa fa-circle-o"></i> Thanh Toán</a></li>
+                    <li><a href="/Admin/Career/Index"><i class="fa fa-circle-o"></i> Ngành nghề</a></li>
+                    <li><a href="/Admin/Standard/Index"><i class="fa fa-circle-o"></i> Lớp</a></li>
+                    <li><a href="/Admin/School/Index"><i class="fa fa-circle-o"></i> Trường</a></li>
+                    <li><a href="/Admin/Student/Index"><i class="fa fa-circle-o"></i> Học sinh</a></li>
+                    
+                </ul>
+            </li>
+            <li class="treeview">
+                <a href="#"><i class="fa fa-newspaper-o"></i> <span>Công cụ</span><i class="fa fa-angle-left pull-right"></i></a>
+                <ul class="treeview-menu">
+                    <li><a href="/Admin/Year/Index"><i class="fa fa-circle-o"></i> Quản lý điển</a></li>
+                    <li><a href="/Admin/Year/Index"><i class="fa fa-circle-o"></i> Điểm danh</a></li>  
+                </ul>
+            </li>
+
+            <li class="treeview">
+                <a href="#"><i class="fa fa-newspaper-o"></i> <span>Quản lý thi</span><i class="fa fa-angle-left pull-right"></i></a>
+                <ul class="treeview-menu">
+                    <li><a href="/Admin/Council/Index"><i class="fa fa-circle-o"></i> Hội đồng thi</a></li>
+                    <li><a href="/Admin/Year/Index"><i class="fa fa-circle-o"></i> Lập danh sách thi</a></li>
+                    <li><a href="/Admin/Year/Index"><i class="fa fa-circle-o"></i> Danh sách thi</a></li>
+                    <li><a href="/Admin/Year/Index"><i class="fa fa-circle-o"></i> In chứng chỉ</a></li>
+                </ul>
+            </li>
+            <li class="treeview">
+                <a href="/Admin/ChangePassword">
+                    <i class="fa fa-home"></i> <span>Đổi mật khẩu</span>
+                </a>
+            </li>
+            <li class="treeview">
+                <a href="/Admin/Logout">
+                    <i class="fa fa-home"></i> <span>Đăng xuất</span>
+                </a>
+            </li>
+
+        </ul>
+    }
+
+</section>
+
+<style>
+    .treeview-lv-3 {
+        padding: 0 !important;
+        border: none !important;
+    }
+
+        .treeview-lv-3 li {
+            padding-left: 5px !important;
+            border: none !important;
+        }
+
+    .treeview-lv-4, .treeview-lv-5 {
+        padding: 0 !important;
+        border: none !important;
+    }
+</style>
