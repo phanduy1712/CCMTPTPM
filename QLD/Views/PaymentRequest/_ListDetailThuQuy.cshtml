@@ -1,0 +1,279 @@
+﻿@using System.Data
+@using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder
+@using CTGroup.Common
+@using CTGroup.BO.Data
+@using CTGroup.BO.Web.Common
+@using CTGroup.BO.Web.Models
+@using CTGroup.Common.Helpers
+@using PagedList.Mvc;
+@model CTGroup.BO.Services.PagedSearchList<CTGroup.BO.Data.PaymentRequestDetail>
+<div class="table-responsive">
+    <div class="m-t-lg">
+        <h5 class="m-t-lg">Tìm thấy @Model.TotalItemCount</h5>
+    </div>
+    <table class="table table-hover table-bordered table-striped" style="margin-bottom: 0px">
+        <tr>
+
+            <th style="text-align: center">#</th>
+            <th style="text-align: center">
+                Mã phiếu
+            </th>
+            <th style="text-align: center">
+                Mã phiếu thu/chi
+            </th>
+            <th>
+                Loaị phiếu
+            </th>
+            <th>
+                Số tiền
+            </th>
+            <th>
+                Loại TT
+            </th>
+            <th>
+                Mô tả
+            </th>
+            <th>
+                Trạng thái
+            </th>
+            <th>
+                Ngày tạo
+            </th>
+            <th>
+                Ngày đề nghị TT
+            </th>
+            <th>
+                Ngày dự kiến thu/chi
+            </th>
+            <th>
+                Ngày thu/chi
+            </th>
+            
+            <th>
+                Độ ưu tiên
+            </th>
+            <th>
+                In phiếu
+            </th>
+
+        </tr>
+        @{ int index = Model.PageSize * (Model.PageNumber - 1) + 1; }
+        @foreach (var item in Model)
+        {
+            <tr>
+
+
+
+                <td style="text-align: center">
+                    @(index++)
+                </td>
+                <td style="text-align: center">
+                    @{
+                        var encryptedId = SecurityHelper.Encrypt(item.ID.ToString());
+                    }
+                    @if (UserPermission.Has(Permission.PaymentRequest_XemXacNhanThuChi))
+                    {
+                        <a href="@Url.Action("AcceptDetail", new {id = encryptedId})">@item.PaymentRequest.ID</a>
+                    }
+                    else
+                    {
+                        @item.PaymentRequest.ID
+                    }
+
+                </td>
+                <td>
+                    @item.Code
+                </td>
+                <td>
+                    @item.Type.GetString()
+                </td>
+                <td style="color: #cece00;font-weight: bold">
+                    @item.Amount.MoneyToString()
+                </td>
+                <td>
+                    @item.PaymentMethod.GetString()
+                </td>
+                <td>
+                    @item.Description
+                </td>
+                @{
+                    string statusColor = "";
+                    if (item.Status == PaymentRequestDetailStatus.DaDuyet)
+                    {
+
+                        statusColor = "green";
+                    }
+                    else if (item.Status == PaymentRequestDetailStatus.DaThanhToan)
+                    {
+
+                        statusColor = "blue";
+                    }
+                }
+                <td style="color: @statusColor">
+                    
+                    @item.Status.GetString()
+                </td>
+                <td>
+                    @item.TimeCreated.ToString("dd-MM-yyyy HH:MM:ss")
+                </td>
+                <td>
+                    @(item.PaymentRequest.DatePaid != null ? item.PaymentRequest.DatePaid.Value.ToString("dd/MM/yyyy") : "")
+                </td>
+                <td>
+                    @if (item.DaySpending != null)
+                    {
+                        @item.DaySpending.GetValueOrDefault().ToString("dd-MM-yyyy")
+                    }
+                </td>
+                <td>
+                    @if (item.TimePaid != null)
+                    {
+                        @item.TimePaid.GetValueOrDefault().ToString("dd-MM-yyyy")
+                    }
+                </td>
+              
+                
+                <td>
+                    @{
+                        var label = "";
+                        var className = "";
+                    }
+                    @if (item.Priority == PaymentRequestDetailPriority.BinhThuong)
+                    {
+                        label = "Bình thường";
+                        className = "btn-warning";
+                    }
+                    else if (item.Priority == PaymentRequestDetailPriority.Cao)
+                    {
+                        label = "Cao";
+                        className = "btn-danger";
+                    }
+                    else if (item.Priority == PaymentRequestDetailPriority.Thap)
+                    {
+                        label = "Thấp";
+                        className = "btn-success";
+                    }
+
+                    <div class="btn-group">
+                        <button class="btn @className ">@label </button>
+
+                    </div>
+                </td>
+                <td class="center">
+                
+                        @*@Html.ActionLink("In phiếu", "Print", new { id = encryptedId }, new { @class = "btn btn-primary ", @target = "_Blank" })*@
+                    <a class="btn btn-primary " target="_Blank" href="@Url.Action("Print",new {id = encryptedId})"><i class="fa fa-print "></i></a>
+                    
+
+                </td>
+
+
+            </tr>
+                        }
+    </table>
+
+    Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) / @Model.PageCount
+    @Html.PagedListPager(Model, page =>
+{
+    Model.SearchModel.PageIndex = page;
+    return Url.Action("ListDetailThuQuy", Model.SearchModel);
+},
+        PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxCommonOption() { HttpMethod = "POST", UpdateTargetId = "content" }))
+</div>
+<div class="modal inmodal fade" id="myModal5" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-m">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">Thiết lập ngày chi</h4>
+                <small class="font-bold"></small>
+            </div>
+            <div id="modalBody">
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+
+    function OpenModal(html) {
+        $('#modalBody').html(html);
+        $('#myModal5').modal('show');
+    }
+
+    $(function checkStatus() {
+        if ($('#Status').val() == '@((int)PaymentRequestDetailStatus.ChoDuyet)') {
+            $('.btnApprove').show()
+            $('.btnChangeStatus').hide()
+        } else {
+            $('.btnApprove').hide()
+            $('.btnChangeStatus').show()
+        }
+
+
+    })
+
+    function btnListClick(e) {
+        //1: Duyệt, 2: Chuyển trạng thái, 3:Thiết lập ngày chi
+        var checkedCount = $('.cbox:checked').length
+
+        if (checkedCount == 0) {
+            swal({
+                title: "Không có phiếu nào được chọn",
+                type: "error"
+            })
+        } else {
+
+            var listIdDetail = []
+            $.each($('.cbox:checked'), function (i, value) {
+                listIdDetail.push($(value).attr('id-value'))
+            })
+
+            if (e == '1' || e == '2') //Duyệt hoặc chuyển trạng thái
+            {
+                OnBeginAjax();
+                $.post('@Url.Action("ChangeStatusPaymentRequestDetail")', { jsonIdDetail: JSON.stringify(listIdDetail), flag: e }, function (result) {
+                    RefreshList(result)
+                }).fail(function () {
+                    OnCompleteAjax()
+                    OnFailure()
+                })
+            } else {
+                $.post('@Url.Action("ModalAddDaySpending")', { jsonIdDetail: JSON.stringify(listIdDetail) }, function (result) {
+                    OpenModal(result)
+                }).fail(function () {
+                    OnCompleteAjax()
+                    OnFailure()
+                })
+
+            }
+
+        }
+    }
+
+    function Checkall(e) {
+        if ($(e).is(':checked')) {
+            $('.cbox:not(.disabled)').prop('checked', 'checked')
+        } else {
+            $('.cbox').removeAttr('checked')
+        }
+    }
+
+    function UpdateEmpStatus(id, status) {
+        OnBeginAjax();
+        $.post('@Url.Action("UpdatePriorityStatus")', { id: id, status: status }, function (result) {
+            RefreshList(result)
+        }).fail(function () {
+            OnCompleteAjax()
+            OnFailure()
+        });
+
+    }
+
+    function RefreshList(result) {
+        OnSuccessAjax(result);
+
+        $('#btnSearch').click();
+    }
+</script>

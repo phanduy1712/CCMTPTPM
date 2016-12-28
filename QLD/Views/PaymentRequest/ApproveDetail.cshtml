@@ -1,0 +1,208 @@
+﻿@using CTGroup.BO.Data
+@using CTGroup.BO.Web.Common
+@using CTGroup.Common
+@model CTGroup.BO.Data.PaymentRequestDetail
+@{
+    ViewBag.Title = "Chi tiết phiếu đề nghị thanh toán";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-sm-4">
+        <ol class="breadcrumb">
+            <li>
+                @Html.ActionLink("Duyệt thanh toán", "Index")
+            </li>
+            <li class="active">
+
+            </li>
+        </ol>
+    </div>
+</div>
+
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content">
+                    @using (Ajax.BeginForm("ApproveDetail", "PaymentRequest", null, new AjaxCommonOption() { OnSuccess = "ApproveSuccess" }, new { role = "form", id = "MainForm" }))
+                    {
+                        @Html.HiddenFor(x => x.ID)
+
+                        <div class="form-horizontal">
+                            <div class="col-md-12">
+                                <div class="ibox">
+                                    <div>
+                                        <h5>
+                                            Thông tin thanh toán
+                                        </h5>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label">Người đề nghị</label>
+                                            <div class="col-md-3">
+                                                <p class="form-control-static">@(Model.PaymentRequest.User != null ? Model.PaymentRequest.User.Fullname : "")</p>
+
+                                            </div>
+                                            <label class="col-md-2 control-label">Số tiền</label>
+                                            <div class="col-md-3">
+                                                <p class="form-control-static">@Model.Amount.MoneyToString()</p>
+
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label">Ghi chú</label>
+                                            <div class="col-md-3">
+                                                <p class="form-control-static">@(Model.Description)</p>
+
+                                            </div>
+                                            <label class="col-md-2 control-label">Ngày thanh toán</label>
+                                            <div class="col-md-3">
+                                                <p class="form-control-static">@(Model.PaymentRequest.DatePaid.HasValue ? Model.PaymentRequest.DatePaid.Value.ToString("dd/MM/yyyy") : "")</p>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-horizontal">
+                            <div class="col-md-12">
+                                <div class="ibox">
+                                    <div>
+                                        <h5>
+                                            Thông tin duyệt
+                                        </h5>
+                                    </div>
+                                    <div class="ibox-content">
+                                        @{
+                                            var nextApprove = (IEnumerable<SelectListItem>)ViewBag.NextApprove;
+                                        }
+                                        @if (nextApprove!=null && nextApprove.Any())
+                                        {
+                                            <div class="form-group">
+                                                <label class="col-md-2 control-label">Người duyệt kế tiếp</label>
+                                                <div class="col-md-3">
+                                                    @Html.DropDownList("NextApprove",nextApprove, "----", new { @class = "form-control select2" })
+                                                </div>
+                                            </div>
+                                        }
+                                        
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label">Ý kiến</label>
+                                            <div class="col-md-6">
+                                                @Html.TextArea("Comment", null, new {@class = "form-control"})
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <div class="form-horizontal">
+                            <div class="col-md-12">
+                                <div class="ibox">
+                                    <div>
+                                        <h3>
+                                            <a class="btn" data-toggle="collapse" data-target="#history">Lịch sử duyệt</a>
+                                        </h3>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <div class="form-group">
+                                            <div id="history" class="collapse">
+
+                                                <div class="table-responsive" id="tblMain">
+                                                    <table class="table table-striped">
+                                                        <tr>
+                                                            <th>
+                                                                STT
+                                                            </th>
+                                                            <th>
+                                                                Người duyệt
+                                                            </th>
+                                                            <th>
+                                                                Ngày duyệt
+                                                            </th>
+                                                            <th>
+                                                                Phê duyệt
+                                                            </th>
+                                                            <th>
+                                                                Trạng thái
+                                                            </th>
+                                                           
+                                                        </tr>
+                                                     @{
+                                                         int i = 0;
+                                                         var history = ViewBag.History as List<PaymentRequestDetailApprove>;
+                                                     }
+
+                                                        @if (history != null)
+                                                        {
+                                                            foreach (var item in history)
+                                                            {
+                                                                i++;
+                                                                <tr>
+                                                                    <td>@i</td>
+                                                                    <td >
+                                                                        @item.User.Fullname
+                                                                    </td>
+                                                                    <td>
+                                                                        @item.TimeApproved.ToString("dd/MM/yyyy HH:mm:ss")
+                                                                    </td>
+                                                                    <td>
+                                                                        @item.Note
+                                                                    </td>
+                                                                    <td>
+                                                                        @item.Status.GetString()
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        }
+                                                    </table>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <button class="btn btn-danger" name="btnApprove" value="reject">Không duyệt</button>
+                                <button class="btn btn-primary" name="btnApprove" value="approve" onclick="return Check();">Duyệt</button>
+                                @Html.ActionLink("Hủy", "Index", null, htmlAttributes: new { @class = "btn btn-default", role = "button" })
+                            </div>
+                        </div>
+                                                            }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function ApproveSuccess(result) {
+        result.callFunc = function () {
+            location.href = "/PaymentRequest/Approve";
+        };
+
+        OnSuccessAjax(result);
+    }
+
+    function  Check() {
+        if ($("#NextApprove").val()=="") {
+            alert("Vui lòng chọn người duyệt kế tiếp.");
+            return false;
+        }
+        return true;
+    }
+</script>

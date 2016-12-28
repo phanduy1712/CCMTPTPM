@@ -1,0 +1,263 @@
+﻿@using CTGroup.BO.Data
+@using CTGroup.BO.Web.Common
+@using CTGroup.Common.Helpers;
+@using CTGroup.Common;
+
+@model CTGroup.BO.Data.PaymentRequestDetail
+@{
+    ViewBag.Title = "Thông báo";
+    Layout = null;
+}
+
+
+<script src="~/Scripts/jquery-2.1.1.js"></script>
+<script src="~/Scripts/Money.js"></script>
+
+
+
+<div style="width:800px">
+    <table style="width: 100%">
+        
+        <tr>
+            <td style="text-align:left;width:50%;">
+              
+                @Model.PaymentRequest.Company.Name
+                @Model.PaymentRequest.Company.Address
+                <br />
+               
+            </td>
+            <td style="text-align:center;width:50%;">
+                <b>Mẫu số 01 - TT</b>
+                <br/><i>(Ban hành theo Thông tư số 200/2014/TT-BTC</i></br>
+                <i>Ngày 22/12/2014 của Bộ Tài chính)</i>
+               
+            </td>
+
+
+        </tr>
+     
+    </table>
+    <table style="width: 100%">
+        <tr>
+            <td style="width:25%">
+                @{
+                    var encryptedId = SecurityHelper.Encrypt(Model.ID.ToString());
+                    var domain = Request.Url.AbsoluteUri.Replace(Request.Url.PathAndQuery, "");
+                    @Html.GenerateQrCode(domain + Url.Action("EditDetail", new { id = encryptedId }))
+                }
+            </td> 
+            <td style="width:40%">
+                <h2 style="text-align: center;">
+                    @WebUtil.GetString(Model.Type).ToUpper()
+                </h2>
+                <h4 style="text-align: center">
+                    <i>Ngày @DateTime.Now.Day tháng @DateTime.Now.Month năm @DateTime.Now.Year</i>
+                </h4> 
+            </td>
+            <td style="width: 35%; padding-top: 20px">
+           
+                <p>
+                    Quyển Số:.................................
+                </p>
+                <p>
+                    @{
+                        string machi = "Mã phiếu chi:............................ ";
+                        string mathu = "Mã phiếu thu:............................ ";
+                    }
+                    @if (Model.Type == PaymentRequestDetailType.PhieuThu)
+                    {
+                        @mathu
+                    }
+                    else
+                    {
+                        @machi
+                    } 
+                </p>
+                <p>
+                    @{
+                        string ngaychi = "Ngày thực chi:...........................  ";
+                        string ngaythu = "Ngày thực thu:........................... ";
+                    }
+                    @if (Model.Type == PaymentRequestDetailType.PhieuThu)
+                    {
+                        @ngaythu
+                    }
+                    else
+                    {
+                        @ngaychi
+                    }
+                    
+                </p>
+                <br/>
+                <br/>
+            
+            </td>
+        </tr>
+    </table>
+<br/>
+    <br/>
+    <table width="762">
+
+
+        <tr>
+            <td>
+                @*Họ và tên: @Model.PaymentRequest.Customer.Name*@
+                @{
+                    string phieuchi = "Họ và tên người nhận tiền: ";
+                    string phieuthu = "Họ và tên người nộp tiền: ";
+                }
+                @if (Model.Type == PaymentRequestDetailType.PhieuThu)
+                {
+                    @phieuthu
+                }
+                else
+                {
+                    @phieuchi
+                }
+
+                @(Model.PaymentRequest.Customer != null ? Model.PaymentRequest.Customer.Name : "")
+            </td>
+
+        </tr>
+        <tr>
+            <td>
+                Địa chỉ: @(Model.PaymentRequest.Customer != null ? Model.PaymentRequest.Customer.Address : "")
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Lý do nộp: @Model.Description
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Số tiền:<b> @Model.Amount.MoneyToString() VND</b>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Viết bằng chữ:
+                <b> <label id="sotienchu"></label></b>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Kèm theo:.........chứng từ gốc
+            </td>
+        </tr>
+
+
+    </table>
+    <table style="width: 100%">
+        <tr>
+            <td></td>
+        </tr>
+        <tr>
+
+
+            <td style="padding-right:30px; text-align:right;" colspan="18">Ngày @DateTime.Now.Day tháng @DateTime.Now.Month năm @DateTime.Now.Year</td>
+        </tr>
+        <tr>
+            <td style="width: 20%; font-weight: bold; text-align:center">
+                Giám đốc
+                <p>
+                    <h5>
+                        <i>
+                            (Ký, họ tên, đóng dấu)
+                        </i>
+                    </h5>
+                </p>
+            </td>
+            <td style="width: 20%;font-weight: bold;text-align:center">
+                Kế toán trưởng
+                <p>
+                    <h5>
+                        <i>
+                            (Ký, họ tên)
+                        </i>
+                    </h5>
+                </p>
+            </td>
+            <td style="width: 20%;font-weight: bold;text-align:center">
+                @{
+                    string phieuchi1 = "Thủ quỹ";
+                    string phieuthu1 = "Người nộp tiền";
+                }
+                @if (Model.Type == PaymentRequestDetailType.PhieuThu)
+                {
+                    @phieuthu1
+                }
+                else
+                {
+                    @phieuchi1
+                }
+                
+                <p>
+                    <h5>
+                        <i>
+                            (Ký, họ tên)
+                        </i>
+                    </h5>
+                </p>
+            </td>
+            <td style="width: 20%;font-weight: bold;text-align:center">
+                
+                Người lập phiếu
+                <p>
+                    <h5>
+                        <i>
+                            (Ký, họ tên)
+                        </i>
+                    </h5>
+                </p>
+            </td>
+            <td style="width: 20%;font-weight: bold;text-align:center">
+                @{
+                    string phieuchi2 = "Người nộp tiền";
+                    string phieuthu2 = "Thủ quỹ";
+                }
+                @if (Model.Type == PaymentRequestDetailType.PhieuThu)
+                {
+                    @phieuthu2
+                }
+                else
+                {
+                    @phieuchi2
+                }
+                
+                <p>
+                    <h5>
+                        <i>
+                            (Ký, họ tên)
+                        </i>
+                    </h5>
+                </p>
+            </td>
+        </tr>
+
+    </table>
+
+    <div style="padding-top:170px">
+        <p>
+            Đã nhận đủ số tiền (Viết bằng chữ): <label id="sotienchu1"></label>
+        </p>
+
+    </div>
+
+</div>
+
+
+    <script>
+    var sotien = docso(@Model.Amount);
+    sotien = capitalizeFirstLetter($.trim(sotien));
+    $("#sotienchu").html(sotien);
+
+    var sotien1 = docso(@Model.Amount);
+    sotien1 = capitalizeFirstLetter($.trim(sotien1));
+    $("#sotienchu1").html(sotien1);
+
+    </script>
+
+
+
+

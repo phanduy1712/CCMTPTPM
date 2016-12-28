@@ -1,0 +1,16 @@
+﻿@using CTGroup.BO.Data
+@using CTGroup.BO.Web.Common
+@using CTGroup.Common.Helpers;
+@using CTGroup.Common;
+
+
+@{
+    ViewBag.Title = "Thông báo";
+    Layout = null;
+}
+
+    @Html.Action("InPhieu", "PaymentRequest", new { ID = @Model.ID })
+
+
+
+

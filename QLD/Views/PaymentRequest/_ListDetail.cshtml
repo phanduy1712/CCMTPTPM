@@ -1,0 +1,200 @@
+﻿@using CTGroup.Common
+@using CTGroup.BO.Data
+@using CTGroup.BO.Web.Common
+@using CTGroup.Common.Helpers
+@using PagedList.Mvc;
+@model CTGroup.BO.Services.PagedSearchList<CTGroup.BO.Data.PaymentRequestDetail>
+<div class="table-responsive">
+    <div class="m-t-lg">
+        <h5 class="m-t-lg">Tìm thấy @Model.TotalItemCount</h5>
+    </div>
+    <table class="table table-hover table-bordered table-striped">
+        <tr>
+            <th style="text-align: center">#</th>
+            <th style="text-align: center">
+                ID
+            </th>
+            <th style="text-align: center">
+                Mã phiếu thu/chi
+            </th>
+            <th>
+                Loaị phiếu
+            </th>
+            <th>
+                Số tiền
+            </th>
+            <th>
+                Loại TT
+            </th>
+            <th>
+                Mô tả
+            </th>
+            <th>
+                Trạng thái
+            </th>
+           
+            <th>
+                Ngày đề nghị TT
+            </th>
+            <th>
+                Ngày dự kiến thu/chi
+            </th>
+            <th>
+                Ngày thu/chi
+            </th>
+            <th>
+                Độ ưu tiên
+            </th>
+            <th>
+               In phiếu
+            </th>
+
+        </tr>
+        @{ int index = Model.PageSize * (Model.PageNumber - 1) + 1; }
+        @foreach (var item in Model)
+        {
+            if( item.Status == PaymentRequestDetailStatus.DaDuyet || item.Status == PaymentRequestDetailStatus.DaThanhToan)
+            { 
+                <tr>
+                    <td style="text-align: center">
+                        @(index++)
+                    </td>
+                    <td style="text-align: center">
+                        @*@if (UserPermission.Has(Permission.ID_Edit)))
+                        {**@
+                        @{
+                            var encryptedId = SecurityHelper.Encrypt(item.ID.ToString());
+                            <a href="@Url.Action("EditDetail", new {id = encryptedId})">@item.ID</a>
+
+                        }
+
+                        @*@Ajax.ActionLink(item.Name, "CreateEdit", new { Id = item.Id }, new AjaxCommonOption() { OnSuccess = "OpenModal" })*@    @*Popup*@
+                        @*}
+                    else
+                    {
+                    @("KH" + item.ID)
+                    }*@
+                    </td>
+                    <th>
+                        @item.Code
+                    </th>
+                    <td>
+                        @item.Type.GetString()
+                    </td>
+                    <td>
+                        @item.Amount.MoneyToString()
+                    </td>
+                    <td>
+                        @item.PaymentMethod.GetString()
+                    </td>
+                    <td>
+                        @item.Description
+                    </td>
+                    @{
+                        string colorStatus = "";
+                        if (item.Status == PaymentRequestDetailStatus.ChoDuyet)
+                        {
+                            colorStatus = "#cece00";
+                        }
+                        else if (item.Status == PaymentRequestDetailStatus.DaDuyet)
+                        {
+                            colorStatus = "green";
+                        }
+                        else if (item.Status == PaymentRequestDetailStatus.DaThanhToan)
+                        {
+                            colorStatus = "blue";
+                        }
+                    }
+                    <td style="color: @colorStatus">
+                        @item.Status.GetString()
+
+                    </td>
+                
+                    <td>
+                        @(item.PaymentRequest.DatePaid != null ? item.PaymentRequest.DatePaid.Value.ToString("dd/MM/yyyy") : "")
+                    </td>
+                    <td>
+                        @(item.TimeApproved != null ? item.TimeApproved.Value.ToString("dd/MM/yyyy") : "")
+                    </td>
+
+                    <td>
+                        @(item.TimePaid != null ? item.TimePaid.Value.ToString("dd/MM/yyyy") : "")
+                    </td>
+                    <td>
+                        @{
+                            var label = "";
+                            var className = "";
+                        }
+                        @if (item.Priority == PaymentRequestDetailPriority.BinhThuong)
+                        {
+                            label = "Bình thường";
+                            className = "btn-warning";
+                        }
+                        else if (item.Priority == PaymentRequestDetailPriority.Cao)
+                        {
+                            label = "Cao";
+                            className = "btn-danger";
+                        }
+                        else if (item.Priority == PaymentRequestDetailPriority.Thap)
+                        {
+                            label = "Thấp";
+                            className = "btn-success";
+                        }
+
+                        <div class="btn-group">
+                            <button data-toggle="dropdown" class="btn @className dropdown-toggle">@label <span class="caret"></span></button>
+                            <ul class="dropdown-menu">
+                                @if (item.Priority != PaymentRequestDetailPriority.BinhThuong)
+                                {
+                                    <li><a onclick="UpdateEmpStatus(@item.ID, @((int) PaymentRequestDetailPriority.BinhThuong))">Bình thường</a></li>
+                                }
+                                @if (item.Priority != PaymentRequestDetailPriority.Cao)
+                                {
+                                    <li><a onclick="UpdateEmpStatus(@item.ID, @((int) PaymentRequestDetailPriority.Cao))">Cao</a></li>
+                                }
+                                @if (item.Priority != PaymentRequestDetailPriority.Cao)
+                                {
+                                    <li><a onclick="UpdateEmpStatus(@item.ID, @((int) PaymentRequestDetailPriority.Thap))">Thấp</a></li>
+                                }
+
+                            </ul>
+                        </div>
+                    </td>
+                    <td class="center">
+                        <a class="btn btn-primary " target = "_Blank" href="@Url.Action("Print",new {id = encryptedId})"><i class="fa fa-print "></i></a>
+                      
+                            @*@Html.ActionLink("In phiếu", "Print", new { id = encryptedId }, new { @class = "btn btn-primary ", @target = "_Blank" })*@
+                        
+                    </td>
+
+
+                </tr>
+        }
+                        }
+    </table>
+    Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) / @Model.PageCount
+    @Html.PagedListPager(Model, page =>
+{
+    Model.SearchModel.PageIndex = page;
+    return Url.Action("ListDetail", Model.SearchModel);
+},
+        PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxCommonOption() { HttpMethod = "POST", UpdateTargetId = "content" }))
+</div>
+
+<script>
+    function UpdateEmpStatus(id, status) {
+        OnBeginAjax();
+        $.post('@Url.Action("UpdatePriorityStatus")', { id: id, status: status }, function (result) {
+            RefreshList(result)
+        }).fail(function () {
+            OnCompleteAjax()
+            OnFailure()
+        });
+
+    }
+
+    function RefreshList(result) {
+        OnSuccessAjax(result);
+       location.reload();
+    }
+</script>
