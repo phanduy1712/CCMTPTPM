@@ -1,0 +1,134 @@
+﻿@using QLD.Library
+@model PagedList.IPagedList<QLD.Models.Career>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Danh sách ngành";
+    Layout = "~/Views/Shared/_BackEnd.cshtml";
+    var checkU = DefineFuntion.CheckRole("CareerU,Career,QL");
+    var checkD = DefineFuntion.CheckRole("CareerD,Career,QL");
+    var checkC = DefineFuntion.CheckRole("CareerC,Career,QL");
+}
+
+<section class="content-header">
+    <h1>
+        <a href="/"><i class="fa fa-home"></i> Trang chủ</a>
+        <small>/ Danh sách rác</small>
+    </h1>
+    <ol class="breadcrumb">
+        @if (checkC)
+        {
+            <li><a href="Create" class="btn  btn-success btn-sm"><i class="fa fa-plus"></i> Thêm mới</a></li>
+        }
+        <li><a href="Index" class="btn btn-default btn-sm"><i class="fa fa-list"></i> Danh sách ngành</a></li>
+    </ol>
+</section>
+@using (Html.BeginForm())
+{
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box">
+                    <div class="box-header">
+                        <h2 class="box-title"><i class="fa fa-list"></i> <b>Danh sách rác</b></h2>
+                        <div class="box-tools">
+                            <div class="input-group w250 pull-left">
+                                <input type="text" placeholder="Search" class="form-control input-sm pull-right" name="searchString">
+                                <div class="input-group-btn">
+                                    <div class="btn-group w70">
+                                        <!-- /.Show Tìm nâng cao -->
+                                        <button class="btn  btn-sm btn-default btn-box-tool " data-widget="collapse" data-toggle="tooltip" data-original-title="Tìm nâng cao"><i class="fa fa-plus"></i></button>
+                                        <button name="type" type="submit" value="search" class="btn btn-sm btn-default"><i class="fa fa-search"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class=" input-group w70  pull-right">
+                                <select class="form-control select2" onchange=" this.form.submit(); " name="nunberRow">
+                                    @foreach (int i in ViewBag.ArrRow)
+                                    {
+                                        if (ViewBag.NunberRow == i)
+                                        {
+                                            <option value="@i" selected="selected">@i</option>}
+                                        else
+                                        {
+                                            <option value="@i">@i</option>}
+                                    }
+
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.Tìm nâng cao -->
+                    <div class="box-body no-padding" style="display: none;">
+                    </div><!-- /.box-body -->
+                    <div class="mailbox-controls box-custom">
+                        <button name="typeName" type="submit" class="btn btn-default btn-sm" value="refresh" data-toggle="tooltip" data-original-title="Tải lại trang"><i class="fa fa-refresh"></i></button>
+                        @if (checkU)
+                        {
+                            <button name="typeName" type="submit" class="btn btn-success btn-sm" value="activity" data-toggle="tooltip" data-original-title="Phục hồi"><i class="fa fa-reply"></i></button>
+                        }
+                        @if (checkD)
+                        {
+                            <button name="typeName" type="submit" class="btn btn-danger btn-sm" value="delete" data-toggle="tooltip" data-original-title="Xóa"><i class="fa  fa-close"></i></button>
+                        }  <div class="pull-right paging-custome">
+                            <div class="pull-left lb-paging-custome ">Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) / @Model.PageCount</div>
+                            <div class="pull-left ">
+                                @Html.PagedListPager(Model, page => Url.Action("Trash", new { page, sortOrder = ViewBag.CurrentSort, searchString = ViewBag.SearchString, nunberRow = ViewBag.NunberRow  }))
+                            </div>
+                        </div>
+                    </div>
+                    <p class="clearfix"></p>
+                    <div class="table-responsive mailbox-messages">
+                        <table class="table table-hover table-striped">
+                            <tr>
+                                <!-- Check all button -->
+                                <th class="w60 center"><a class="btn btn-default btn-sm checkbox-toggle" data-toggle="tooltip" data-original-title="Chọn tất cả"><i class="fa fa-square-o"></i></a></th>
+                                <th class="w100 center">@Html.ActionLink("Trạng thái", "Trash", new { sortOrder = ViewBag.Status, searchString = ViewBag.SearchString, numberRow = ViewBag.NumberRow })</th>
+                                @*<th>@Html.ActionLink("Mã ngành", "Trash", new { sortOrder = ViewBag.Code, searchString = ViewBag.SearchString, numberRow = ViewBag.NumberRow })</th>*@
+                                <th>@Html.ActionLink("Tên ngành", "Trash", new { sortOrder = ViewBag.Name, searchString = ViewBag.SearchString, numberRow = ViewBag.NumberRow })</th>
+                                <th>@Html.ActionLink("Ghi chú", "Trash", new { sortOrder = ViewBag.Note, searchString = ViewBag.SearchString, numberRow = ViewBag.NumberRow })</th>
+                               
+                            </tr>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="w60 center"><label><input name="inputCheck" value="@DefineFuntion.Encrypt(item.CareerId)" type="checkbox" class="minimal" /></label></td>
+                                    <td class="w100 center">
+                                        @if (item.Status == 1)
+                                        { <span class="badge bg-green" data-toggle="tooltip" data-original-title="Cho phép dùng"><i class="fa fa-check-circle"></i></span> }
+                                        else
+                                        {<span class="badge bg-red" data-toggle="tooltip" data-original-title="Không cho dùng"> <i class="fa  fa-minus-circle"></i></span> }
+
+                                    </td>
+                                  
+                                    @if (checkU)
+                                    {
+                                        <td>
+                                            @Html.EncodedActionLink(item.Name, "Edit", "Admin/Career", new { id = item.CareerId }, null)
+
+                                    </td>
+                                    }
+                                    else
+                                    {
+                                        <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                                    }
+                                    <td>@Html.DisplayFor(modelItem => item.Note)</td>
+                                   
+                                </tr>
+                            }
+                        </table>
+                    </div>
+
+                    <div class="mailbox-controls box-custom">
+                        <div class="pull-right paging-custome">
+                            <div class="pull-left lb-paging-custome ">Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) / @Model.PageCount</div>
+                            <div class="pull-left ">
+                                @Html.PagedListPager(Model, page => Url.Action("Trash", new { page, sortOrder = ViewBag.CurrentSort, searchString = ViewBag.SearchString, nunberRow = ViewBag.NunberRow  }))
+                            </div>
+                        </div>
+                    </div>
+                    <p class="clearfix"></p>
+                </div>
+            </div>
+        </div>
+    </section>
+}
