@@ -1,0 +1,76 @@
+﻿@using QLD.Library
+@model  QLD.Models.Career
+@{
+    ViewBag.Title = "Thêm mới ngành";
+    Layout = "~/Views/Shared/_BackEnd.cshtml";
+    var checkU = DefineFuntion.CheckRole("CareerU,Career,QL");
+    var checkC = DefineFuntion.CheckRole("CareerC,Career,QL");
+}
+
+@using (Html.BeginForm())
+{
+    <section class="content-header">
+        <h1>
+            <a href="/"><i class="fa fa-home"></i> Trang chủ</a>
+            <small>
+                <a href="Index"> / Danh sách ngành</a>
+            </small>
+            <small>/ Thêm ngành</small>
+        </h1>
+        @{Html.RenderAction("ViewButtomCreate", "Admin", new { showE = checkU, showC = checkC });}
+    </section>
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box">
+                    <div class="box-header">
+                        <h2 class="box-title"><i class="fa fa-list"></i> <b>Thêm ngành</b></h2>
+                    </div>
+                    @{Html.RenderAction("Notice", "Admin", new { mess = ViewBag.Mess });}
+                    <hr />
+                    <div class="box-body">
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true)
+                        <div class="col-md-9 box-info">
+
+                            <div class="form-group select-custom">
+                                @Html.Label("Tên ngành ", new { @class = "control-label  " })
+                                @Html.ValidationMessageFor(model => model.Name, null, new { @class = "color-red" })
+                                @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+                            </div>
+                            <div class="form-group select-custom">
+                                @Html.Label("Ghi chú", new { @class = "control-label  " })
+                                @Html.ValidationMessageFor(model => model.Note, null, new { @class = "color-red" })
+                                @Html.TextAreaFor(model => model.Note, new { @class = "form-control" })
+                            </div>
+
+                            <div class="form-group select-custom">
+                                @Html.Label("Trạng thái", new { @class = "control-label " })
+                                @Html.ValidationMessageFor(model => model.Status, null, new { @class = "color-red" })
+                                @Html.DropDownList("Status", null, "Vui lòng chọn", new { @class = "form-control " })
+                            </div>
+
+                        </div>
+                        <div class="col-md-3 box-info"> 
+               
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+} 
+ 
+@section scripts{
+
+    <script src="~/Theme/ckeditor/ckeditor.js"></script>
+    <script src="~/Theme/ckfinder/ckfinder.js"></script>
+    <script type="text/javascript">
+        SetNumberText();
+        var editor = CKEDITOR.instances['editor1'];
+        if (editor) { editor.destroy(true); }
+        CKEDITOR.replace('ArchiveContent', { enterMode: CKEDITOR.ENTER_BR, });
+        CKFinder.setupCKEditor(null, '@Url.Content("~/Theme/ckfinder/")');
+    </script>
+}
