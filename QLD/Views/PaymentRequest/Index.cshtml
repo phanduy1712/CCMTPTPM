@@ -1,0 +1,147 @@
+﻿@using CTGroup.BO.Web.Common
+@model CTGroup.BO.Web.Models.PaymentRequestSearchModel
+<link href="/Content/PagedList.css" rel="stylesheet" type="text/css" />
+@{
+    ViewBag.Title = "Quản lý đề nghị thanh toán";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-sm-4">
+        <ol class="breadcrumb">
+            <li class="active">
+                <strong>Quản lý thanh toán</strong>
+            </li>
+        </ol>
+        @*@if (UserPermission.Has(Permission.PaymentRequest_Create))
+            {*@
+        @*@Ajax.ActionLink("Thêm mới", "CreateEditPaymentRequest", null, new AjaxCommonOption() { OnSuccess = "OpenModal" }, new { @class = "btn btn-primary" })*@ @*Popup*@
+        <a class="btn btn-primary m-t-sm" href=@Url.Action("Create", "PaymentRequest")> Tạo mới</a>
+        @*}*@
+    </div>
+</div>
+@*@if (UserPermission.Has(Permission.PaymentRequest_View))
+    {*@
+<div class="wrapper wrapper-content animated fadeInUp">
+
+    <div class="ibox">
+        <div class="ibox-title">
+            <h5>Tìm kiếm</h5>
+        </div>
+        <div class="ibox-content">
+            @using (Ajax.BeginForm("List", "PaymentRequest", new AjaxCommonOption() { UpdateTargetId = "content" }))
+            {
+                <div class="form-horizontal">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="col-md-4 control-label">Mã</label>
+                                <div class="col-md-8">
+                                    @Html.TextBoxFor(x => x.ID, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="col-md-4 control-label">Loại</label>
+                                <div class="col-md-8">
+                                    @Html.DropDownListFor(x => x.Type, null, "--------", new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="col-md-4 control-label">Từ ngày</label>
+                                <div class="col-md-8">
+                                    <div class="input-group date">
+                                        <input type="text" name="FromDate" class="form-control" data_val="false" value="@DateTime.Now.ToShortDateString()">
+                                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="col-md-4 control-label">Đến ngày</label>
+                                <div class="col-md-8">
+                                    <div class="input-group date">
+                                        <input type="text" name="ToDate" class="form-control" data_val="false" value="@DateTime.Now.ToShortDateString()">
+                                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="col-md-4 control-label">Trạng thái</label>
+                                <div class="col-md-8">
+                                    @Html.DropDownListFor(x => x.Status, null, "--------", new {@class = "form-control"})
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="col-md-4 control-label">Khách hàng</label>
+                                <div class="col-md-8">
+                                    @Html.TextBoxFor(x => x.CustomerName, new {@class = "form-control"})
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="col-md-4 control-label">HĐ</label>
+                                <div class="col-md-8">
+                                    @Html.TextBoxFor(x => x.ContractNo, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <button class="btn btn-primary" type="submit" id="submit">Tìm</button>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div id="content" class="loading">
+
+            </div>
+        </div>
+    </div>
+</div>
+        
+@*}*@
+
+@*<div class="modal inmodal fade" id="myModal" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">Create Edit Popup</h4>
+                    <small class="font-bold"></small>
+                </div>
+
+                <div class="modal-body" id="modal-body">
+                </div>
+            </div>
+        </div>
+    </div>*@
+<script type="text/javascript">
+    $(function() {
+        $('.input-group.date').datetimepicker({
+
+            locale: 'vi',
+            format: 'DD/MM/YYYY',
+            extraFormats: ["MM/YYYY"],
+            defaultDate: null
+        });
+    })
+    $(document).ready(function() {
+        $('#submit').click()
+    })
+    function OpenModal(html) {
+        $('#modal-body').html(html);
+        $('#myModal').modal('show');
+    }
+</script>

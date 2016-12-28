@@ -1,0 +1,12 @@
+﻿@model IEnumerable<CTGroup.BO.Data.PaymentRequestFile>
+@if (Model.Count() > 0 ) { 
+<label class="control-label">Danh sách file chứng từ</label>
+    <ul>
+   
+        @foreach (var item in Model)
+        {
+            <li><a target="_Blank" href="~/Content/PaymentRequest/@item.FileName">@item.FileName</a></li>
+        }
+    </ul>
+}
+

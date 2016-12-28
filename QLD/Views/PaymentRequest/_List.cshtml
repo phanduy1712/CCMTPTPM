@@ -1,0 +1,155 @@
+﻿@using CTGroup.Common;
+@using CTGroup.BO.Data
+@using CTGroup.BO.Web.Common
+@using PagedList.Mvc;
+@using CTGroup.Common.Helpers
+@model CTGroup.BO.Services.PagedSearchList<CTGroup.BO.Data.PaymentRequest>
+<div class="table-responsive">
+    <div class="m-t-lg">
+        <h5 class="m-t-lg">Tìm thấy @Model.TotalItemCount</h5>
+    </div>
+    <table class="table table-hover table-bordered table-striped">
+        <tr>
+            <th>#</th>
+            <th>
+                Mã phiếu
+            </th>
+            <th>
+                Loại
+            </th>
+            <th >
+                Tổng tiền
+            </th>
+            <th >
+                Đã duyệt chi
+            </th>
+            <th >
+                Đã TT
+            </th>
+            <th>
+                Ngày đề nghị TT
+            </th>
+            <th>
+                Nội dung
+            </th>
+            <th>
+                Khách hàng
+            </th>
+
+            <th>
+                Hợp đồng
+            </th>
+
+            <th>
+                Trạng thái
+            </th>
+            <th>
+                In phiếu
+            </th>
+
+        </tr>
+        @{ int index = Model.PageSize * (Model.PageNumber - 1) + 1; }
+        @foreach (var item in Model)
+        {
+
+            <tr>
+                <td>
+                    @(index++)
+                </td>
+                <td style="text-align: center;">
+                  
+                    @{
+                        var encryptedId = SecurityHelper.Encrypt(item.ID.ToString());
+                        <a href="@Url.Action("Edit", new {id = @encryptedId})">@item.ID</a>
+                    }
+                    @*@Ajax.ActionLink(item.Name, "CreateEdit", new { Id = item.Id }, new AjaxCommonOption() { OnSuccess = "OpenModal" })*@    @*Popup*@
+                    @*}
+                        else
+                        {
+                        @("KH" + item.ID)
+                        }*@
+                </td>
+                <td>
+                    @WebUtil.GetString(item.Type)
+                </td>
+                <td style="color: #cece00;font-weight: bold">
+                    @item.Amount.MoneyToString()
+                </td>
+                <td style="color: green; font-weight: bold">
+                    @{
+                        string totalAmount = "";
+                        var paymentRequestDetails = item.PaymentRequestDetails.Where(x => x.Type == PaymentRequestDetailType.PhieuChi && (x.Status == PaymentRequestDetailStatus.DaDuyet || x.Status==PaymentRequestDetailStatus.DaThanhToan));
+                        if (paymentRequestDetails != null)
+                        {
+                            totalAmount = paymentRequestDetails.Sum(x => x.Amount).MoneyToString();
+                        }
+                    }
+                    @totalAmount
+                </td>
+                <td style="color: blue;font-weight: bold">
+                    @item.AmountPaid.MoneyToString()
+                </td>
+                <td>
+                    @(item.DatePaid != null ? item.DatePaid.Value.ToString("dd/MM/yyyy") : "")
+                </td>
+                <td>
+                    @item.Description
+                </td>
+                <td>
+                    @(item.Customer != null ? item.Customer.Name : "")
+                </td>
+                    
+                <td>
+                    @(item.CustomerContract != null ? item.CustomerContract.Name : "")
+                </td>
+                @{
+                    string colorStatus = "";
+                    if (item.Status == PaymentRequestStatus.ChoDuyet)
+                    {
+                        colorStatus = "#cece00";
+                    }
+                    else if(item.Status == PaymentRequestStatus.Huy)
+                    {
+                        colorStatus = "red";
+                    }else if (item.Status == PaymentRequestStatus.HoanTat)
+                    {
+                        colorStatus = "green";
+                    }
+                    else if (item.Status == PaymentRequestStatus.DaThanhToan)
+                    {
+                        colorStatus = "blue";
+                    }
+                }
+                <td style="color: @colorStatus">
+                    @WebUtil.GetString(item.Status)
+                    
+                </td>
+                <td class="center">
+                    @if (item.Status == PaymentRequestStatus.ChoDuyet)
+                    {
+                        <a class="btn btn-primary " target="_Blank" href="@Url.Action("Print3", new {id = encryptedId})"><i class="fa fa-print "></i></a>
+                    }
+
+
+                    @*@Html.ActionLink("In phiếu", "Print3", new { id = encryptedId }, new { @class = "btn btn-primary ", @target = "_Blank" })*@
+
+                    @*@Html.ActionLink("In phiếu", "Print3", new { id = item.ID }, new { @class = "btn btn-primary ", @target = "_Blank" })*@
+                </td>
+
+
+            </tr>
+
+
+                        }
+
+
+    </table>
+    Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) / @Model.PageCount
+    @Html.PagedListPager(Model, page =>
+{
+    Model.SearchModel.PageIndex = page;
+    return Url.Action("List", Model.SearchModel);
+},
+        PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxCommonOption() { HttpMethod = "POST", UpdateTargetId = "content" }))
+</div>
+

@@ -1,0 +1,207 @@
+﻿@using CTGroup.BO.Data
+@using CTGroup.BO.Web.Common
+@using CTGroup.Common.Helpers;
+@using CTGroup.Common;
+
+
+@model CTGroup.BO.Data.PaymentRequest
+
+<script src="~/Scripts/jquery-2.1.1.js"></script>
+<script src="~/Scripts/Money.js"></script>
+
+<style>
+    .tblMain {
+        border-collapse: collapse;
+    }
+
+        .tblMain th {
+            border: 1px solid black;
+        }
+
+        .tblMain td {
+            border: 1px solid black;
+            text-align: center;
+        }
+</style>
+<div style="width: 800px;height: 1100px">
+    <div style="height: 85%">
+        <table class="tblMain" style="width:100%">
+
+            <tr>
+                <td style="text-align:center;width:20%;">
+                    <img src="/Content/Image/logo-ctgroup.png" width="100" height="100" />
+                </td>
+                <td style="text-align:center;width:10%;">
+                    @{
+                        var encryptedId = SecurityHelper.Encrypt(Model.ID.ToString());
+                        var domain = Request.Url.AbsoluteUri.Replace(Request.Url.PathAndQuery, "");
+                        @Html.GenerateQrCode(domain + Url.Action("Edit", new { id = @encryptedId }))
+                    }
+                </td>
+
+                <td style="text-align:center;width:45%;">
+                    <h2><b>GIẤY ĐỀ NGHỊ TẠM ỨNG </b></h2>
+
+                </td>
+                <td style="text-align:left;width:25%;">
+                    Số hiệu: BM01-601/QT-CTG
+                    <br /> Lần ban hành: 02
+                    <br />Ngày hiệu lực: 07/03/2013
+                    <br /> Số trang:1/1
+                </td>
+
+
+            </tr>
+        </table>
+        <br />
+        <br />
+        <table width="800">
+
+
+            <tr>
+                <td width="50%">
+                    Họ và tên: @Model.User.Fullname
+                </td>
+                <td width="50%">
+                    Chức vụ: @Model.User.Position
+                </td>
+            </tr>
+            <tr>
+                <td width="50%">
+                    Phòng ban/ Bộ phận: @Model.User.HR_Emp.Level2VN
+                </td>
+                <td width="50%">
+                    Mã ĐV/NV:
+                </td>
+            </tr>
+            <tr>
+                <td width="50%">
+                    Số điện thoại cố định:.....
+                </td>
+                <td width="50%">
+                    Nội bộ (Ext):.....   ,ĐTDD: @Model.User.PhoneNumber
+                </td>
+
+            </tr>
+
+
+            <tr>
+
+                <td colspan="12" width="100%">
+                    Số tiền tạm ứng: @Model.Amount.MoneyToString() VND <i>(Bằng chữ: <label id="sotienchu"></label> )</i>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="12" width="100%">
+                    Nội dung tạm ứng (<i>ghi chi tiết</i>): @Model.Description
+
+                </td>
+            </tr>
+            <tr>
+                <td width="50%">
+                    Ngày đề nghị tạm ứng: @Model.DatePaid.GetValueOrDefault().ToShortDateString()
+                </td>
+                <td width="50%">
+                    Thời hạn hoàn trả tạm ứng:
+                </td>
+            </tr>
+      
+
+        </table>
+        <table>
+            <tr>
+                <td with="20%" colspan="6" valign="top">
+                    Chứng từ đính kèm:
+
+                </td>
+                <td>
+                    @{
+                        string haveContract = "Hơp đồng";
+                        string haveBill = "Hóa đơn";
+                        string haveBBNT = "Biên bản nghiệm thu";
+                        string haveNXK = "Phiếu nhập kho";
+
+
+                    }
+                    @if (Model.HaveContract == true)
+                    {
+                        @haveContract
+                    }
+                    @if (Model.HaveBill == true)
+                    {
+                        <br /> @haveBill
+                    }
+                    @if (Model.HaveBBNT == true)
+                    {
+                        <br />@haveBBNT
+                    }
+                    @if (Model.HaveNXK == true)
+                    {
+                        <br />@haveNXK
+                    }
+                    <br />@Model.HaveNote
+
+                </td>
+            </tr>
+
+        </table>
+        <table style="width: 100%">
+            <tr>
+                <td></td>
+            </tr>
+            <tr>
+
+
+                <td style="padding-right:30px; text-align:right;" colspan="16">
+                    <i>Tp.Hồ Chí Minh, Ngày @DateTime.Now.Day tháng @DateTime.Now.Month năm @DateTime.Now.Year</i>
+                </td>
+            </tr>
+            <tr>
+
+
+                <td colspan="4" style="width: 33%;font-weight: bold;">
+                    <b>Kế toán trưởng</b>
+
+                </td>
+                <td colspan="4" style="width: 33%;font-weight: bold;text-align:center">
+                    <b> Trưởng phòng/ Ban</b>
+
+                </td>
+                <td colspan="4" style="width: 33%;font-weight: bold;text-align:center">
+                    <b> Người đề nghị</b>
+
+                </td>
+
+            </tr>
+
+        </table>
+    </div>
+    <div style="height: 15%">
+        <p>
+            <h5>
+                <i>
+                    Hướng dẫn thời gian hoàn tạm ứng: Đối với các khoản tạm định phí: Thời gian hoàn ứng không quá 30 ngày kể từ ngày tạm ứng. Đối với các khoản tạm ứng khác: Thời gian hoàn ứng không quá 07 ngày kể từ ngày tạm ứng.
+                    <br />
+                    Người đề nghị tạm ứng cam kết: Nếu quá thời gian quy định của công ty mà chưa thực hiện xong công tác hoàn ứng thì Công ty có quyền cấn trừ các khoản lương, thưởng, ...của cá nhân tôi vào số tiền mà tôi đã tạm ứng.
+                    <br />
+                    KTT Tập đoàn và Trưởng Ban KSNB xem xét, phê duyệt các khoản chi phí liên quan đến định phí do VRTĐ chi trực tiếp (ngoại trừ dự án, các khoản chi thuộc danh mục định phí nhưng ngoài kế hoạch tài chính và có giá trị trên 20.000.000 đồng)
+                </i>
+            </h5>
+        </p>
+
+    </div>
+</div>
+
+
+
+<script>
+    var sotien = docso(@Model.Amount);
+    sotien = capitalizeFirstLetter($.trim(sotien));
+    $("#sotienchu").html(sotien);
+</script>
+
+
+
+
+
+

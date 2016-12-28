@@ -1,0 +1,96 @@
+﻿@using CTGroup.Common;
+@using CTGroup.BO.Web.Common
+@using PagedList.Mvc;
+@model CTGroup.BO.Services.PagedSearchList<CTGroup.BO.Data.PaymentRequestDetail>
+<div class="table-responsive">
+    <div class="m-t-lg">
+        <h5 class="m-t-lg">Tìm thấy @Model.TotalItemCount</h5>
+    </div>
+    <table class="table table-hover table-bordered table-striped">
+        <tr>
+            <th>Stt</th>
+            <th>
+                Mã phiếu TT
+            </th>
+            <th>
+                Mã phiếu Thu/Chi
+            </th>
+            <th>
+                Người đề nghị
+            </th>
+            <th>
+              
+                Loại phiếu
+            </th>
+            <th>
+                Số tiền
+            </th>
+
+            <th>
+                Diễn giải
+            </th>
+            <th>
+                Ngày tạo
+            </th>
+            <th>
+            
+                Trạng thái
+            </th>
+
+        </tr>
+        @{ int index = Model.PageSize * (Model.PageNumber - 1) + 1; }
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @(index++)
+                </td>
+                <td>
+                    @item.PaymentRequestID
+                </td>
+                <td>
+                 
+                    @*@{
+                        var encryptedId = SecurityHelper.Encrypt(item.ID.ToString());
+                        <a href="@Url.Action("Edit", new {id = @encryptedId})">@item.ID</a>
+                    }*@
+                    <a href="@("/PaymentRequest/ApproveDetail/"+item.ID)">
+                        @item.PaymentRequest.ID
+                    </a>
+                
+                </td>
+                <td>
+                    @item.PaymentRequest.User.Fullname
+                </td>
+                <td>
+                  
+                    @item.PaymentRequest.Type.GetString()
+                </td>            
+                <td>
+                    @item.Amount
+                    
+                </td>
+                <td>
+                    @item.Description
+                  
+                </td>
+                <td>
+                    @item.TimeCreated.ToString("dd/MM/yyyy HH:mm:ss")
+                </td>
+                <td>
+                    @item.Status.GetString()
+                </td>
+
+            </tr>
+                        }
+    </table>
+    Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) / @Model.PageCount
+    @Html.PagedListPager(Model, page =>
+{
+    Model.SearchModel.PageIndex = page;
+    return Url.Action("List", Model.SearchModel);
+},
+        PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxCommonOption() { HttpMethod = "POST", UpdateTargetId = "content" }))
+</div>
+
+
