@@ -39,7 +39,6 @@ namespace QLD.Controllers
 
             return View();
         }
-  
         public ActionResult demo1()
         {
             ViewBag.Message = "Your applicatioan description page.";
