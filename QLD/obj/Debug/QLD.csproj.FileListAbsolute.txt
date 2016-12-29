@@ -1,1 +1,2 @@
 D:\Documents\CCMTPTPM\QLD\obj\Debug\QLD.csprojResolveAssemblyReference.cache
+E:\DA_CC\QLD\obj\Debug\QLD.csprojResolveAssemblyReference.cache
